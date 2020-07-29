@@ -3,3 +3,9 @@ _site
 .jekyll-cache
 .jekyll-metadata
 vendor
+_posts
+.gitignore
+Gemfile
+Gemfile.lock
+_config.yml
+
