@@ -21,7 +21,7 @@ class: left, middle, inverse
 
 * .cyan[Introduction]
 
-* Recast
+* Recast & NavMesh
 
 * Steerings
 
@@ -63,7 +63,7 @@ class: left, middle, inverse
 
 - Characters as points (.blue[center of mass])
 
-- .blue[$2 1/2D$]: hybrid 2D & 3D to simplify maths
+- .blue[$2\frac{1}{2}D$]: hybrid 2D & 3D to simplify maths
 
 .cols5050[
 .col1[
@@ -105,8 +105,8 @@ $$orientation = orientation + angle$$
 - angle
 
 .blue[Examples]: 
-- [Vehicle seek](figures/seek1.mp4)
-- [Animal seek](figures/seek2.mp4)
+- [Vehicle seek](figures/seek1.mkv)
+- [Animal seek](figures/seek2.mkv)
 ]
 .col2[
 ![:scale 90%](figures/seek.png)
@@ -177,6 +177,7 @@ $$d(v,w)=\sqrt{(w_x-v_x)^2+(w_z-v_z)^2}$$
 ```C#
 Vector3.Distance(target.transform.position, transform.position)
 ```
+Needed as .blue[stoping criteria] to avoid wiggle in .blue[seek].
 
 .blue[angle]: between 2 vectors
 
@@ -214,18 +215,81 @@ $$v\times w=(v_y\cdot w_z-v_z\cdot w_y,v_z\cdot w_x-v_x\cdot v_z,v_x\cdot w_y-v_
 
 ---
 
-# Steering
+# Steerings
 
 - Kinematic .blue[drawback]: it is not very realistic
 
 - Steering (Dynamic): by adding acceleration
 
-  - Rotation, Position, Velocity
+### Seek
 
+.cols5050[
+.col1[
+.blue[Input]: 
+- agent(position, orientation)
+- target(position)
+- maxVelocity, maxRotation
+- acceleration, turnAcceleration
+
+.blue[Output]: 
+- velocity
+- angle
+]
+.col2[
+.blue[Example]: 
+- [Vehicle seek](figures/seek3.mkv)
+]]
+---
+
+# Steering Seek
+
+```C#
+void Update()
+{
+    if (Vector3.Distance(target.transform.position, transform.position) <
+        stopDistance) return;
+
+    Seek();   // calls to this function should be reduced
+
+    turnSpeed += turnAcceleration * Time.deltaTime;
+    turnSpeed = Mathf.Min(turnSpeed, maxTurnSpeed);
+    movSpeed += acceleration * Time.deltaTime;
+    movSpeed = Mathf.Min(movSpeed, maxSpeed);
+
+    transform.rotation = Quaternion.Slerp(transform.rotation, 
+                                          rotation, Time.deltaTime * turnSpeed);
+    transform.position += transform.forward.normalized * movSpeed *
+                          Time.deltaTime;   
+}
+
+void Seek()
+{
+    Vector3 direction = target.transform.position - transform.position;
+    direction.y = 0f;
+    movement = direction.normalized * acceleration;
+    float angle = Mathf.Rad2Deg * Mathf.Atan2(movement.x, movement.z);
+    rotation = Quaternion.AngleAxis(angle, Vector3.up);
+}
+```
 
 ---
 
-# Steering Seek & Flee (arrive?)
+# Arriving
+
+*A chasing agent should never reach its goal when seeking.*
+
+- .blue[Stopping distance]
+
+- Steering Arrive
+
+speed=\frac{maxSpeed\times}{slowRadius}
+
+  - distance / slowRadius
+
+  - max acceleration should be controlled
+
+
+
 
 
 ---
