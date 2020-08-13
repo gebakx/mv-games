@@ -280,17 +280,14 @@ void Seek()
 
 - .blue[Stopping distance]
 
-- Steering Arrive
+- .blue[Steering Arrive]
 
-speed=\frac{maxSpeed\times}{slowRadius}
+$$speed=\frac{maxSpeed\times distance}{slowRadius}$$
 
-  - distance / slowRadius
+.small[.center[max acceleration should be controlled]]
 
-  - max acceleration should be controlled
-
-
-
-
+.blue[Example]: 
+- [Vehicle seek](figures/seek4.mkv)
 
 ---
 class: left, middle, inverse
@@ -299,13 +296,16 @@ class: left, middle, inverse
 
 * .brown[Introduction]
 
-* .cyan[Recast]
+* .cyan[Recast & NavMesh]
 
 * Steerings
 
 * Combination (flocking)
 
 * Pathfinding
+
+* References
+
 
 ---
 
@@ -342,31 +342,129 @@ class: left, middle, inverse
 
 # NavMesh
 
-transpes i documentation
+.cols5050[
+.col1[
+.blue[Creating the NavMesh]:
+
+- Open `Window - AI - Navigation`
+
+- Select scene objectes as:
+  - `Static`
+  - `Walkable` or `Not Walkable`
+
+- Click `Bake` tab - `Bake` button
+
+Bake again as you need
+
+[Main properties](https://docs.unity3d.com/Manual/nav-BuildingNavMesh.html):
+
+- *Agent Radius & Height*
+
+- *Max Slope & Step Height*
+]
+.col2[
+![:scale 75%](figures/navmesh2.png)
+
+![:scale 90%](figures/navmesh.png)
+]]
 
 ---
 
-# NavMeshAgent
+# NavMesh Agent
+
+.blue[Using the NavMesh]:
+
+- Add the `NavMesh Agent` component to the agent
+
+- Code:
+```
+    public NavMeshAgent agent;
+    public GameObject target;
+
+    void Seek()
+    {
+        agent.destination = target.transform.position; 
+    }
+```
+
+[Main property groups](https://docs.unity3d.com/Manual/class-NavMeshAgent.html):
+
+- **Steering**: `Speed`, `Stopping Distance`...
+
+- **Object Avoidance**: `Radius`...
+
+- **Path Finding**: `Auto Traverse Off Mesh Links`...
 
 ---
 
-# NavMeshObstacle
+# NavMesh Obstacle
+
+.blue[Creating a dynamic obstable]:
+
+- Add the `NavMesh Obstacle` component to the object
+
+- Add the `RigidBody` component to the object (being `kinematic`)
+
+[Main property](https://docs.unity3d.com/Manual/class-NavMeshObstacle.html):
+
+- *Carve*: creates a hole in the NavMesh
+
+![:scale 95%](figures/carving.svg)
+.center[.small[[Source & documentation](https://docs.unity3d.com/Manual/class-NavMeshObstacle.html)]]
 
 ---
 
-# OffMeshLink
+# Off-Mesh Link I
+
+.blue[Creating an Off-mesh Link]:
+
+- Add the `Off Mesh Link` component to one of the two objects
+
+.center[![:scale 90%](figures/OffMeshLink.svg)]
+.center[.small[[Source & documentation](https://docs.unity3d.com/Manual/nav-CreateOffMeshLink.html)]]
+
+---
+
+# Off-Mesh Link II
+
+.blue[Building Off-mesh Links]:
+
+- Tic the `Generate OffMeshLinks` at `Navigation - Object`
+
+.center[![:scale 45%](figures/AutoOffMeshLinks.svg)]
+.center[.small[[Source & documentation](https://docs.unity3d.com/Manual/nav-BuildingOffMeshLinksAutomatically.html)]]
+
+- `Bake` again
+
+[Main properties](https://docs.unity3d.com/Manual/nav-BuildingOffMeshLinksAutomatically.html):
+
+- *Drop Height* & *Jump Distance*
+
+---
+
+# Navigation Areas and Costs
+
+.blue[Navigation Areas] define how difficult it is to walk across a specific area.
+
+.center[![:scale 85%](figures/NavMeshArea.svg)]
+.center[.small[[Source & documentation](https://docs.unity3d.com/Manual/nav-AreasAndCosts.html)]]
 
 
 ---
 
-# New Areas
+# Navigation System
 
+### A* searh algorithm
 
----
+- `NavMeshAgent.SetDestination`: possible not available at next frame
 
-# NavMeshPath
+- `NavMeshAgent.pathPending`
 
-[documentation](https://docs.unity3d.com/ScriptReference/AI.NavMeshPath.html)
+### NavMeshPath
+
+- Data structure: path as a list of waypoints
+
+- `NavMeshAgent.path`: [documentation](https://docs.unity3d.com/ScriptReference/AI.NavMeshPath.html)
 
 ---
 class: left, middle, inverse
@@ -375,26 +473,65 @@ class: left, middle, inverse
 
 * .brown[Introduction]
 
-* .brown[Recast]
+* .brown[Recast & NavMesh]
 
 * .cyan[Steerings]
 
+* Combination (flocking)
+
 * Pathfinding
+
+* References
 
 ---
 
 # Steerings
 
-Mapa de delegates
-
 ### Quins?
-- Seek & Flee: Wander, Pursue & Evade, Hide
-- Velocity Matching: Arrive (amb el seek)
+- Wander, Pursue & Evade, Hide
 
-### Combining: flocking
+- enumerar els altres i dibuix
+
+---
+class: left, middle, inverse
+
+# Outline
+
+* .brown[Introduction]
+
+* .brown[Recast & NavMesh]
+
+* .brown[Steerings]
+
+* .cyan[Combination (flocking)]
+
+* Pathfinding
+
+* References
+
+---
+
+# Combining: flocking
 - Separation
 - Cohesion
 - Match velocity/align
+
+---
+class: left, middle, inverse
+
+# Outline
+
+* .brown[Introduction]
+
+* .brown[Recast & NavMesh]
+
+* .brown[Steerings]
+
+* .brown[Combination (flocking)]
+
+* .cyan[Pathfinding]
+
+* References
 
 ---
 
@@ -402,9 +539,22 @@ Mapa de delegates
 - Recast
 - A*, dijkstra...
 
+---
+class: left, middle, inverse
 
-### ???
-- Avançar el Recast abans dels steerings avançats
+# Outline
+
+* .brown[Introduction]
+
+* .brown[Recast & NavMesh]
+
+* .brown[Steerings]
+
+* .brown[Combination (flocking)]
+
+* .brown[Pathfinding]
+
+* .cyan[References]
 
 ---
 
