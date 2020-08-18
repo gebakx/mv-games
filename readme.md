@@ -581,16 +581,84 @@ Seek(target.transform.position + target.transform.forward * lookAhead);
 ]]
 ---
 
-# Hide
+# Hide (Previous C# Stuff)
+
+[Example](figures/hide.mkv)
+
+.blue[Defining Hiding Spots]:
+
+```
+GameObject[] hidingSpots;
+...
+hidingSpots = GameObject.FindGameObjectsWithTag("hide");
+```
+
+.cols5050[
+.col1[
+.blue[Anonymous Functions]:
+
+`Func<int, int> inc = (a) => a + 1;`
+
+`inc(4))`  👉  5
+
+.blue[Tuples]:
+```
+(int, string) a = (1, "Pep");
+(int, string) b = (2, "Anna");
+```
+`a.CompareTo(b)`  👉  -1
+
+]
+.col2[
+.blue[Linq Select] (Queries):
+
+`int[] v = { 3, 2, -3, 5 };`
+
+`v.Min()`  👉  -3
+
+`v.Select((x) => Math.Abs(x)).Min()`  👉  2
+]]
 
 ---
 
-# Waypoints
+# Hide
+
+.blue[Simple implementation]:
+
+```
+    void Hide()
+    {
+        Func<GameObject, float> distance = 
+            (hs) => Vector3.Distance(target.transform.position, 
+                                     hs.transform.position);
+        GameObject hidingSpot = hidingSpots.Select(
+            ho => (distance(ho), ho)
+            ).Min().Item2;
+
+        Vector3 dir = hidingSpot.transform.position - target.transform.position;
+        Ray backRay = new Ray(hidingSpot.transform.position, -dir.normalized);
+        RaycastHit info;
+        hidingSpot.GetComponent<Collider>().Raycast(backRay, out info, 50f);   
+
+        Seek(info.point + dir.normalized);     
+    }
+```
+
+---
+
+# Follow Path
+
+.blue[Patrol with Waypoints]:
 
 [Making an Agent Patrol Between a Set of Points](https://docs.unity3d.com/Manual/nav-AgentPatrol.html)
 
+---
 
-.blue[Path Following]
+# Smoothing the corners
+
+.blue[Ghost Following]:
+
+.blue[Path Following]:
 
 Referències als assets
 
