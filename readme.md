@@ -650,7 +650,21 @@ hidingSpots = GameObject.FindGameObjectsWithTag("hide");
 
 .blue[Patrol with Waypoints]:
 
-[Making an Agent Patrol Between a Set of Points](https://docs.unity3d.com/Manual/nav-AgentPatrol.html)
+```
+public GameObject[] waypoints;
+int patrolWP = 0;
+...
+if (!agent.pathPending && agent.remainingDistance < 0.5f) Patrol();
+...
+void Patrol()
+{
+    patrolWP = (patrolWP + 1) % waypoints.Length;
+    Seek(waypoints[patrolWP].transform.position);
+}
+```
+- [Example](figures/patrol1.mkv)
+
+- [Reference](https://docs.unity3d.com/Manual/nav-AgentPatrol.html)
 
 ---
 
@@ -658,16 +672,33 @@ hidingSpots = GameObject.FindGameObjectsWithTag("hide");
 
 .blue[Ghost Following]:
 
+- Follow a ghost agent <br>
+[Example](figures/patrol2.mkv)
+
+- Adjust speeds (ghost waiting?)
+
+- Remember to disable the ghost `Mesh Renderer`
+
+.cols5050[
+.col1[
 .blue[Path Following]:
 
-Referències als assets
+Use .blue[Beizer Curves] to create the path. <br>
+Assets contains methods to get the closest point to the curve.
+
+- [BG Curve](https://assetstore.unity.com/packages/tools/utilities/bg-curve-59043) asset. BansheeGz, 2020.
+- [Bézier Path Creator](https://assetstore.unity.com/packages/tools/utilities/b-zier-path-creator-136082) asset. Sebastian Lague, 2019.
+]
+.col2[
+![:scale 90%](figures/bezier.png)
+]]
 
 ---
 
 # Steering Stuff
 
 - There are many more movements (see references): <br>
-.blue[Obstacle and Wall Avoidance]
+Example: .blue[Obstacle and Wall Avoidance]
 
 .center[![:scale 30%](figures/avoidance.gif)]
 .center[.small[[Source](http://www.red3d.com/cwr/steer/gdc99/)]]
