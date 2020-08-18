@@ -21,7 +21,7 @@ class: left, middle, inverse
 
 * .cyan[Introduction]
 
-* Recast & NavMesh
+* NavMesh
 
 * Steerings
 
@@ -239,9 +239,10 @@ $$v\times w=(v_y\cdot w_z-v_z\cdot w_y,v_z\cdot w_x-v_x\cdot v_z,v_x\cdot w_y-v_
 .blue[Example]: 
 - [Vehicle seek](figures/seek3.mkv)
 ]]
+
 ---
 
-# Steering Seek
+# Steering Update
 
 ```C#
 void Update()
@@ -261,7 +262,13 @@ void Update()
     transform.position += transform.forward.normalized * movSpeed *
                           Time.deltaTime;   
 }
+```
 
+---
+
+# Steering Seek 
+
+```C#
 void Seek()
 {
     Vector3 direction = target.transform.position - transform.position;
@@ -296,7 +303,7 @@ class: left, middle, inverse
 
 * .brown[Introduction]
 
-* .cyan[Recast & NavMesh]
+* .cyan[NavMesh]
 
 * Steerings
 
@@ -370,13 +377,27 @@ Bake again as you need
 
 ---
 
-# NavMesh Agent
+# NavMesh Agent I
+
+[Inner Workings of the Navigation System](https://docs.unity3d.com/Manual/nav-InnerWorkings.html):
+
+1. Find Paths
+2. Follow the Path
+3. Avoid Obstacles
+4. Move the Agent (Steerings)
+
+.center[![:scale 90%](figures/NavMeshLoop.svg)]
+
+---
+
+# NavMesh Agent II
 
 .blue[Using the NavMesh]:
 
 - Add the `NavMesh Agent` component to the agent
 
 - Code:
+
 ```
     public NavMeshAgent agent;
     public GameObject target;
@@ -384,16 +405,16 @@ Bake again as you need
     void Seek()
     {
         agent.destination = target.transform.position; 
-    }
+    };
 ```
 
 [Main property groups](https://docs.unity3d.com/Manual/class-NavMeshAgent.html):
 
-- **Steering**: `Speed`, `Stopping Distance`...
+- **Steering**: *Speed*, *Stopping Distance*, *Auto Braking*...
 
-- **Object Avoidance**: `Radius`...
+- **Object Avoidance**: *Radius*...
 
-- **Path Finding**: `Auto Traverse Off Mesh Links`...
+- **Path Finding**: *Auto Traverse Off Mesh Links*...
 
 ---
 
@@ -466,6 +487,12 @@ Bake again as you need
 
 - `NavMeshAgent.path`: [documentation](https://docs.unity3d.com/ScriptReference/AI.NavMeshPath.html)
 
+### Advanced NavMesh
+
+- [Mesh Polygons](https://docs.unity3d.com/ScriptReference/AI.NavMeshTriangulation.html)
+
+- [NavMesh building components](https://docs.unity3d.com/Manual/NavMesh-BuildingComponents.html)
+
 ---
 class: left, middle, inverse
 
@@ -473,7 +500,7 @@ class: left, middle, inverse
 
 * .brown[Introduction]
 
-* .brown[Recast & NavMesh]
+* .brown[NavMesh]
 
 * .cyan[Steerings]
 
@@ -485,12 +512,100 @@ class: left, middle, inverse
 
 ---
 
-# Steerings
+# Wander
 
-### Quins?
-- Wander, Pursue & Evade, Hide
+.cols5050[
+.col1[
 
-- enumerar els altres i dibuix
+.blue[Simple implementation]:
+.small[
+```
+void Wander()
+{
+    float radius = 2f;
+    float offset = 3f;
+
+    Vector3 localTarget = new Vector3(
+        Random.Range(-1.0f, 1.0f), 0, 
+        Random.Range(-1.0f, 1.0f));
+    localTarget.Normalize();
+    localTarget *= radius;
+    localTarget += new Vector3(0, 0, offset);
+
+    Vector3 worldTarget = 
+        transform.TransformPoint(localTarget);
+    worldTarget.y = 0f;
+
+    Seek(worldTarget);
+}
+```
+
+[Example](figures/wander.mkv)
+]
+]
+.col2[
+![:scale 95%](figures/wander.png)
+.center[.small[.red[(Millington, 2019)]]]
+
+.blue[Issues]:
+- How often calling wander?
+- What happens in the limit? 
+- Remember *Auto Brake* & *Stopping Distance*
+]]
+
+---
+
+# Pursue & Evade
+
+.blue[Simple implementation]:
+
+```
+Vector3 targetDir = target.transform.position - transform.position;
+float lookAhead = targetDir.magnitude / agent.speed;
+Seek(target.transform.position + target.transform.forward * lookAhead);
+
+// Flee for evasion
+```
+
+.cols5050[
+.col1[
+.blue[Examples]: 
+
+- [pursuit](figures/pursuit.mkv)
+
+- [evasion](figures/evasion.mkv)
+]
+.col2[
+.center[![:scale 90%](figures/pursuit.gif)]
+.center[.small[[Source](http://www.red3d.com/cwr/steer/gdc99/)]]
+]]
+---
+
+# Hide
+
+---
+
+# Waypoints
+
+[Making an Agent Patrol Between a Set of Points](https://docs.unity3d.com/Manual/nav-AgentPatrol.html)
+
+
+.blue[Path Following]
+
+Referències als assets
+
+---
+
+# Steering Stuff
+
+- There are many more movements (see references): <br>
+.blue[Obstacle and Wall Avoidance]
+
+.center[![:scale 30%](figures/avoidance.gif)]
+.center[.small[[Source](http://www.red3d.com/cwr/steer/gdc99/)]]
+
+- [Reynolds OpenSteer](http://opensteer.sourceforge.net/) <br>
+C++ library to help construct steering behaviors for autonomous characters in games and animation
 
 ---
 class: left, middle, inverse
@@ -499,7 +614,7 @@ class: left, middle, inverse
 
 * .brown[Introduction]
 
-* .brown[Recast & NavMesh]
+* .brown[NavMesh]
 
 * .brown[Steerings]
 
@@ -513,8 +628,20 @@ class: left, middle, inverse
 
 # Combining: flocking
 - Separation
+
+![:scale 40%](figures/separation.gif)
+
 - Cohesion
+
+![:scale 40%](figures/cohesion.gif)
+
+---
+
 - Match velocity/align
+
+![:scale 40%](figures/alignment.gif)
+
+[source](http://www.red3d.com/cwr/steer/gdc99/)
 
 ---
 class: left, middle, inverse
@@ -523,7 +650,7 @@ class: left, middle, inverse
 
 * .brown[Introduction]
 
-* .brown[Recast & NavMesh]
+* .brown[NavMesh]
 
 * .brown[Steerings]
 
@@ -536,8 +663,10 @@ class: left, middle, inverse
 ---
 
 ### Pathfinding
-- Recast
+
 - A*, dijkstra...
+
+- Jeràrquic
 
 ---
 class: left, middle, inverse
@@ -546,7 +675,7 @@ class: left, middle, inverse
 
 * .brown[Introduction]
 
-* .brown[Recast & NavMesh]
+* .brown[NavMesh]
 
 * .brown[Steerings]
 
@@ -562,15 +691,22 @@ class: left, middle, inverse
 
 - Ian Millington. *AI for Games* (3rd ed). CRC Press, 2019.
 
-- C. W. Reynolds. [Steering Behaviors For autonomous Characters](http://www.red3d.com/cwr/papers/1999/gdc99steer.pdf). Proceedings of the Game Developers Conference (GDC), 1999.
+- Craig W. Reynolds. [Steering Behaviors For autonomous Characters](http://www.red3d.com/cwr/papers/1999/gdc99steer.pdf). Proceedings of the Game Developers Conference (GDC), 1999.
 
-## Libraries
+- Penny de Byl. [Artificial Intelligence for Beginners](https://learn.unity.com/course/artificial-intelligence-for-beginners). Unity Learn Course, 2020.
+
+- Sebastian Lague. [Boids (Flocking, github)](https://github.com/SebLague/Boids). [Video](https://www.youtube.com/watch?v=bqtqltqcQhw), 2019.
+
+---
+
+# Libraries
 
 - Craig W. Reynolds. [OpenSteer](http://opensteer.sourceforge.net/), 2004.
 
 - Mikko Mononen. [Recast & Detour](https://github.com/recastnavigation/recastnavigation), 2016.
 
-## Resources
+
+# Resources
 
 - [Easy Primitive People](https://assetstore.unity.com/packages/3d/characters/easy-primitive-people-161846) asset. Bit Gamey, 2020.
 
