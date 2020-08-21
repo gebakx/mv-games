@@ -684,10 +684,12 @@ void Patrol()
 .blue[Path Following]:
 
 Use .blue[Beizer Curves] to create the path. <br>
-Assets contains methods to get the closest point to the curve.
 
 - [BG Curve](https://assetstore.unity.com/packages/tools/utilities/bg-curve-59043) asset. BansheeGz, 2020.
 - [Bézier Path Creator](https://assetstore.unity.com/packages/tools/utilities/b-zier-path-creator-136082) asset. Sebastian Lague, 2019.
+
+Both contain getting closest point to the curve.
+
 ]
 .col2[
 ![:scale 90%](figures/bezier.png)
@@ -725,22 +727,165 @@ class: left, middle, inverse
 
 ---
 
-# Combining: flocking
-- Separation
+# Combining Steering Behaviors
 
-![:scale 40%](figures/separation.gif)
+- So far we are turning behaviours on/off
 
-- Cohesion
+- There are better way to coordinate them:
+  - Blended weights: this is the way flocking works (separation + align + cohesion)
+  - Priority groups: execute the most important behaviour at the time and ignore the rest
+  - Mix between them: could each priority group contain weights ?
+  - Cooperative Arbitration: more complex structure:<br>
+`Targeter -> Decomposer -> Constraints -> Actuator`
 
-![:scale 40%](figures/cohesion.gif)
+- Sadly the only way moving forward is human fine tuning of values
 
 ---
 
-- Match velocity/align
+# Flocking
 
-![:scale 40%](figures/alignment.gif)
+.cols5050[
+.col1[
+*Groupal behavior such of birds or fishes.* 
 
-[source](http://www.red3d.com/cwr/steer/gdc99/)
+.blue[Sum of three simple rules]:
+
+- **Cohesion**: neighbour center of mass
+- **Match velocity/align**: average neighbours heading
+- **Separation**: avoid crowding neighbours 
+]
+.col2[
+![:scale 90%](figures/birds.jpg)
+.small[Source: [Birds of a Feather Flock](https://blogs.unimelb.edu.au/sciencecommunication/2014/09/06/birdphysics/)]
+
+[Example Video](figures/flocking.mkv)
+]]
+
+.center[![:scale 25%](figures/cohesion.gif)
+![:scale 25%](figures/alignment.gif)
+![:scale 25%](figures/separation.gif)<br>
+[source](http://www.red3d.com/cwr/steer/gdc99/)]
+
+---
+
+# Flocking Settings
+
+.blue[Flocking Manager]:
+
+.center[![:scale 45%](figures/flockSettings.png)]
+
+```
+allFish = new GameObject[numFish];
+for (int i = 0; i < numFish; ++i) {
+    Vector3 pos = this.transform.position + ... // random position
+    Vector3 randomize = ... // random vector direction
+    allFish[i] = (GameObject)Instantiate(fishPrefab, pos, 
+                                Quaternion.LookRotation(randomize));
+    allFish[i].GetComponent<Flock>().myManager = this;
+}
+```
+
+---
+
+# Flocking Rules I
+
+.blue[Cohesion]:
+
+```
+Vector3 cohesion = Vector3.zero;
+int num = 0;
+
+foreach (GameObject go in myManager.allFish) {
+    if (go != this.gameObject) {
+        float distance = Vector3.Distance(go.transform.position, 
+                                          transform.position);
+        if (distance <= myManager.neighbourDistance) {
+            cohesion += go.transform.position;
+            num++;
+        }
+    }
+}
+
+if (num > 0)
+    cohesion = (cohesion / num - transform.position).normalized * speed;
+```
+
+---
+
+# Flocking Rules II
+
+.blue[Match velocity/align]:
+
+```
+Vector3 align = Vector3.zero;
+int num = 0;
+
+foreach (GameObject go in myManager.allFish) {
+    if (go != this.gameObject) {
+        float distance = Vector3.Distance(go.transform.position, 
+                                          transform.position);
+        if (distance <= myManager.neighbourDistance) {
+            align += go.GetComponent<Flock>().direction;
+            num++;
+        }
+    }
+}
+
+if (num > 0) {
+    align /= num;
+    speed = Mathf.Clamp(align.magnitude, myManager.minSpeed, myManager.maxSpeed);
+}
+```
+
+---
+
+# Flocking Rules III
+
+.blue[Separation]:
+
+```
+Vector3 separation = Vector3.zero;
+
+foreach (GameObject go in myManager.allFish) {
+    if (go != this.gameObject) {
+        float distance = Vector3.Distance(go.transform.position, 
+                                          transform.position);
+        if (distance <= myManager.neighbourDistance)
+            separation -= (transform.position - go.transform.position) / 
+                          (distance * distance);
+    }
+}
+```
+
+---
+
+# More Flocking Stuff
+
+.blue[Combination]:
+
+```
+direction = (cohesion + align + separation).normalized * speed;
+```
+- Three rules + combination should be placed in the same `foreach`.
+
+.blue[Update]:
+
+```
+transform.rotation = Quaternion.Slerp(transform.rotation,
+                                      Quaternion.LookRotation(direction),
+                                      myManager.rotationSpeed * Time.deltaTime);
+transform.Translate(0.0f, 0.0f, Time.deltaTime * speed);
+```
+
+.blue[Final notes]:
+
+- Rules should not be calculated every frame.
+
+- Some random issues enriches the behaviour.
+
+- Introduction of a lider is a common extension.
+
+- 
 
 ---
 class: left, middle, inverse
@@ -763,9 +908,38 @@ class: left, middle, inverse
 
 ### Pathfinding
 
-- A*, dijkstra...
+- A*, dijkstra i BFS
 
-- Jeràrquic
+---
+
+# Modifying A*
+
+- There are hundreds of A* optimizations / improvements / etc.
+- Normally they optimize for the specific game
+- Remember A* little brothers: Dijkstra and BFS
+- In some situations they could be useful too, do not discard them
+- We will look into:
+  - Hierarchical Pathfinding
+  - Open Goal Pathfinding
+  - Dynamic Pathfinding
+  - IDA / SMA
+  - Time Slicing and Pooling Planners
+
+---
+
+# Hierarchical Pathfinding
+
+.cols5050[
+.col1[
+- How would be speed up this example ?
+
+- More than 2 ms is bad for Real Time applications
+
+- [Code](https://github.com/anvaka/ngraph.path) and [Demo](https://anvaka.github.io/ngraph.path.demo/#?graph=amsterdam-roads) here
+]
+.col2[
+![:scale 90%](figures/hierarchical.gif)
+]]
 
 ---
 class: left, middle, inverse
@@ -796,19 +970,33 @@ class: left, middle, inverse
 
 - Sebastian Lague. [Boids (Flocking, github)](https://github.com/SebLague/Boids). [Video](https://www.youtube.com/watch?v=bqtqltqcQhw), 2019.
 
----
-
-# Libraries
+## Libraries
 
 - Craig W. Reynolds. [OpenSteer](http://opensteer.sourceforge.net/), 2004.
 
 - Mikko Mononen. [Recast & Detour](https://github.com/recastnavigation/recastnavigation), 2016.
 
+---
 
 # Resources
+
+.blue[Examples]:
 
 - [Easy Primitive People](https://assetstore.unity.com/packages/3d/characters/easy-primitive-people-161846) asset. Bit Gamey, 2020.
 
 - [LowPoly Trees and Rocks](https://assetstore.unity.com/packages/3d/vegetation/lowpoly-trees-and-rocks-88376) asset. greyRoad Studio, 2019.
 
 - [Five Seamless Tileable Ground Textures](https://assetstore.unity.com/packages/2d/textures-materials/floors/five-seamless-tileable-ground-textures-57060) asset. A3D, 2020.
+
+- [Simplistic Low Poly Nature](https://assetstore.unity.com/packages/3d/environments/simplistic-low-poly-nature-93894) asset. Acorn Bringer, 2018.
+
+.blue[Bezier Curves]:
+
+- [BG Curve](https://assetstore.unity.com/packages/tools/utilities/bg-curve-59043) asset. BansheeGz, 2020.
+
+- [Bézier Path Creator](https://assetstore.unity.com/packages/tools/utilities/b-zier-path-creator-136082) asset. Sebastian Lague, 2019.
+
+.blue[Image]
+
+- [Fondo Marino](https://commons.wikimedia.org/wiki/File:Fondo_marino_3.jpg). Alejandro Muñoz Cabrisas, 2017.
+
