@@ -729,16 +729,26 @@ class: left, middle, inverse
 
 # Combining Steering Behaviors
 
-- So far we are turning behaviours on/off
+- Previours steerings serve as building blocks for complex behaviors.
 
-- There are better way to coordinate them:
-  - Blended weights: this is the way flocking works (separation + align + cohesion)
-  - Priority groups: execute the most important behaviour at the time and ignore the rest
-  - Mix between them: could each priority group contain weights ?
-  - Cooperative Arbitration: more complex structure:<br>
-`Targeter -> Decomposer -> Constraints -> Actuator`
+- Combination can happen in many ways:
+  - .blue[Arbitration]: switch steerings as world changes<br>
+Example: *wander* & *pursue*
 
-- Sadly the only way moving forward is human fine tuning of values
+  - .blue[Blending]: sum or weighted sum<br>
+Example: flocking (*separation* + *align* + *cohesion*)<br>
+Problem: .red[components cancelling]
+
+  - .blue[Mixing arbitration and blending]
+
+- Advanced combinations:
+  - .blue[Priority groups]: blending plus priorities<br>
+execute highest priority steerings and ignore the rest
+
+  - .blue[More complex structures]: *Cooperative Arbitration* 
+
+- Combinations need to be carefully adjusted.
+
 
 ---
 
@@ -885,7 +895,11 @@ transform.Translate(0.0f, 0.0f, Time.deltaTime * speed);
 
 - Introduction of a lider is a common extension.
 
-- 
+<!--
+Notes:
+- Comentar que juguin amb els paràmetres.
+- Referència a la implementació de Sebastian Lague
+-->
 
 ---
 class: left, middle, inverse
