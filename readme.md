@@ -2,7 +2,7 @@ class: center, middle
 
 ## Artificial Intelligence
 
-# Movement in Games
+# Movement & <br> Pathfinding in Games
 
 <br>
 
@@ -25,7 +25,9 @@ class: left, middle, inverse
 
 * Steerings
 
-* Combination (flocking)
+* Flocking
+
+* Graphs
 
 * Pathfinding
 
@@ -307,7 +309,9 @@ class: left, middle, inverse
 
 * Steerings
 
-* Combination (flocking)
+* Flocking
+
+* Graphs
 
 * Pathfinding
 
@@ -697,6 +701,30 @@ Both contain getting closest point to the curve.
 
 ---
 
+# Combining Steering Behaviors
+
+- Previours steerings serve as building blocks for complex behaviors.
+
+- Combination can happen in many ways:
+  - .blue[Arbitration]: switch steerings as world changes<br>
+Example: *wander* & *pursue*
+
+  - .blue[Blending]: sum or weighted sum<br>
+Example: flocking (*separation* + *align* + *cohesion*)<br>
+Problem: .red[components cancelling]
+
+  - .blue[Mixing arbitration and blending]
+
+- Advanced combinations:
+  - .blue[Priority groups]: blending plus priorities<br>
+execute highest priority steerings and ignore the rest
+
+  - .blue[More complex structures]: *Cooperative Arbitration* 
+
+- Combinations need to be carefully adjusted.
+
+---
+
 # Steering Stuff
 
 - There are many more movements (see references): <br>
@@ -719,35 +747,13 @@ class: left, middle, inverse
 
 * .brown[Steerings]
 
-* .cyan[Combination (flocking)]
+* .cyan[Flocking]
+
+* Graphs
 
 * Pathfinding
 
 * References
-
----
-
-# Combining Steering Behaviors
-
-- Previours steerings serve as building blocks for complex behaviors.
-
-- Combination can happen in many ways:
-  - .blue[Arbitration]: switch steerings as world changes<br>
-Example: *wander* & *pursue*
-
-  - .blue[Blending]: sum or weighted sum<br>
-Example: flocking (*separation* + *align* + *cohesion*)<br>
-Problem: .red[components cancelling]
-
-  - .blue[Mixing arbitration and blending]
-
-- Advanced combinations:
-  - .blue[Priority groups]: blending plus priorities<br>
-execute highest priority steerings and ignore the rest
-
-  - .blue[More complex structures]: *Cooperative Arbitration* 
-
-- Combinations need to be carefully adjusted.
 
 
 ---
@@ -912,7 +918,163 @@ class: left, middle, inverse
 
 * .brown[Steerings]
 
-* .brown[Combination (flocking)]
+* .brown[Flocking]
+
+* .cyan[Graphs]
+
+* Pathfinding
+
+* References
+
+---
+
+# Graphs
+
+.cols5050[
+.col1[
+![:scale 80%](figures/graph.jpeg).red[*]
+
+![:scale 60%](figures/directedGraph.png).red[*]
+]
+.col2[
+.blue[Math definition]:
+
+$G=(V,E)$
+
+$V=\textrm{set of vertices}$
+
+$E=\textrm{set of edges}$
+
+.blue[Example]:
+
+$V=${$v_1,v_2,v_3$}
+
+$E=${$(v_1,v_2),(v_1,v_3),(v_2,v_3)$}
+
+]]
+
+- .blue[Edges] can be .blue[directed] (one way) or .blue[undirected] (two ways).
+
+- Both vertices and edges can contain information.
+
+.footnote[.red[*] [Source](https://medium.com/basecs/a-gentle-introduction-to-graph-theory-77969829ead8)]
+
+---
+
+# Representation as graphs
+
+.center[
+![:scale 40%](figures/graphRepr1.png)
+![:scale 40%](figures/graphRepr2.png)<br>
+.red[[source](https://www.redblobgames.com/pathfinding/a-star/introduction.html)]]
+
+.cols5050[
+.col1[
+.center[![:scale 80%](figures/social-graph.png)<br>
+.red[[Source](https://docs.aws.amazon.com/neptune/latest/userguide/graph-database.html)]]
+]
+.col2[
+.center[![:scale 90%](figures/worldGraph.jpeg)<br>
+.red[[Source](https://quantdare.com/graph-theory-finance/)]]
+]]
+
+---
+
+# Some Applications in GameAI
+
+.cols5050[
+.col1[
+.blue[Pathfinding]:
+
+.center[![:scale 70%](figures/polygon-navmesh.png)<br>
+.red[[Source](https://theory.stanford.edu/~amitp/GameProgramming/MapRepresentations.html)]]
+
+.blue[Decision making]: planners
+
+.center[![:scale 80%](figures/goap.png)<br>
+.red[[Source](https://www.indiedb.com/games/attack-of-the-gelatinous-blob/news/a-look-into-the-ai-goap)]]
+]
+.col2[
+
+.blue[Tactics]: influence maps
+
+.center[![:scale 90%](figures/influenceMap.png)<br>
+.red[[Source](https://www.gamedev.net/articles/programming/artificial-intelligence/the-total-beginners-guide-to-game-ai-r4942/)]]
+]]
+
+---
+
+# Shortest Path Problem
+
+.cols5050[
+.col1[
+*Find the minimum (sum of edges costs) path between two vertices.*
+
+Main Algorithms:
+- .blue[Dijkstra]: general cases
+- .blue[A*]: requires an heuristic $h$ (estimation cost function)
+]
+.col2[
+.center[
+![:scale 70%](figures/shortestPath.png)<br>
+[Source](https://en.wikipedia.org/wiki/Shortest_path_problem)]
+]]
+
+.center[
+![:scale 30%](figures/dijkstra.png)
+![:scale 30%](figures/astar.png)<br>
+[Source](https://www.redblobgames.com/pathfinding/a-star/introduction.html)]
+
+---
+
+# Dijkstra
+
+.cols5050[
+.col1[
+.blue[Pseudocode]:
+![:scale 110%](figures/dijkstraAlg.png)
+[Source](http://db.cs.duke.edu/courses/fall11/cps149s/notes/a_star.pdf)
+
+.blue[C# implementation]: [view](code/shortestPath.html) / [code](shortestPath.cs)
+]
+.col2[
+.center[
+![:scale 90%](figures/dijkstraAnimation.gif)
+[Source](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)]
+]]
+
+---
+
+# A*
+
+.cols5050[
+.col1[
+.blue[Pseudocode]:
+![:scale 110%](figures/astarAlg.png)
+[Source](http://db.cs.duke.edu/courses/fall11/cps149s/notes/a_star.pdf)
+
+.blue[C# implementation]: [view](code/shortestPath.html) / [code](shortestPath.cs)
+]
+.col2[
+.center[
+![:scale 90%](figures/astarAnimation.gif)
+[Source](https://en.wikipedia.org/wiki/A*_search_algorithm)]
+]]
+
+---
+class: left, middle, inverse
+
+# Outline
+
+* .brown[Introduction]
+
+* .brown[NavMesh]
+
+* .brown[Steerings]
+
+* .brown[Flocking]
+
+* .brown[Graphs]
 
 * .cyan[Pathfinding]
 
@@ -920,24 +1082,29 @@ class: left, middle, inverse
 
 ---
 
-### Pathfinding
+# Pathfinding
 
-- A*, dijkstra i BFS
+Aplicació A* per pathfinding:
+
+- polygons
+
+- A*
+
+- suavitzat de camins
 
 ---
 
-# Modifying A*
+# Advanced Pathfinding
 
-- There are hundreds of A* optimizations / improvements / etc.
-- Normally they optimize for the specific game
-- Remember A* little brothers: Dijkstra and BFS
-- In some situations they could be useful too, do not discard them
-- We will look into:
-  - Hierarchical Pathfinding
-  - Open Goal Pathfinding
-  - Dynamic Pathfinding
-  - IDA / SMA
-  - Time Slicing and Pooling Planners
+- Hierarchical Pathfinding
+
+- Open Goal Pathfinding
+
+- Dynamic Pathfinding
+
+- IDA / SMA
+
+- Time Slicing and Pooling Planners
 
 ---
 
@@ -966,7 +1133,9 @@ class: left, middle, inverse
 
 * .brown[Steerings]
 
-* .brown[Combination (flocking)]
+* .brown[Flocking]
+
+* .brown[Graphs]
 
 * .brown[Pathfinding]
 

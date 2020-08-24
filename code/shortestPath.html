@@ -1,0 +1,104 @@
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">System.Collections</span>;
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">System.Collections.Generic</span>;
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">UnityEngine</span>;
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">System.Linq</span>;
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">System</span>;
+
+<span style="color: #008800; font-weight: bold">public</span> <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Graph</span>
+{
+    <span style="color: #008800; font-weight: bold">public</span> HashSet&lt;<span style="color: #333399; font-weight: bold">string</span>&gt; vertices = <span style="color: #008800; font-weight: bold">new</span> HashSet&lt;<span style="color: #333399; font-weight: bold">string</span>&gt; {<span style="background-color: #fff0f0">&quot;a&quot;</span>, <span style="background-color: #fff0f0">&quot;b&quot;</span>, <span style="background-color: #fff0f0">&quot;c&quot;</span>, <span style="background-color: #fff0f0">&quot;d&quot;</span>, <span style="background-color: #fff0f0">&quot;e&quot;</span>, <span style="background-color: #fff0f0">&quot;f&quot;</span>};
+
+    <span style="color: #008800; font-weight: bold">public</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt;&gt; edges = <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt;&gt;
+        { 
+            { <span style="background-color: #fff0f0">&quot;a&quot;</span>, <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt; { {<span style="background-color: #fff0f0">&quot;b&quot;</span>, <span style="color: #6600EE; font-weight: bold">4</span>}, {<span style="background-color: #fff0f0">&quot;c&quot;</span>, <span style="color: #6600EE; font-weight: bold">2</span>} } },
+            { <span style="background-color: #fff0f0">&quot;b&quot;</span>, <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt; { {<span style="background-color: #fff0f0">&quot;c&quot;</span>, <span style="color: #6600EE; font-weight: bold">5</span>}, {<span style="background-color: #fff0f0">&quot;d&quot;</span>, <span style="color: #6600EE; font-weight: bold">10</span>} } },
+            { <span style="background-color: #fff0f0">&quot;c&quot;</span>, <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt; { {<span style="background-color: #fff0f0">&quot;e&quot;</span>, <span style="color: #6600EE; font-weight: bold">3</span>} } },
+            { <span style="background-color: #fff0f0">&quot;d&quot;</span>, <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt; { {<span style="background-color: #fff0f0">&quot;f&quot;</span>, <span style="color: #6600EE; font-weight: bold">11</span>} } },
+            { <span style="background-color: #fff0f0">&quot;e&quot;</span>, <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt; { {<span style="background-color: #fff0f0">&quot;d&quot;</span>, <span style="color: #6600EE; font-weight: bold">4</span>} } },
+            { <span style="background-color: #fff0f0">&quot;f&quot;</span>, <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>,<span style="color: #333399; font-weight: bold">int</span>&gt; { } }
+        };
+
+    <span style="color: #008800; font-weight: bold">public</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>, <span style="color: #333399; font-weight: bold">int</span>&gt; h = <span style="color: #008800; font-weight: bold">new</span> Dictionary&lt;<span style="color: #333399; font-weight: bold">string</span>, <span style="color: #333399; font-weight: bold">int</span>&gt; 
+        { {<span style="background-color: #fff0f0">&quot;a&quot;</span>, <span style="color: #6600EE; font-weight: bold">20</span>}, {<span style="background-color: #fff0f0">&quot;b&quot;</span>, <span style="color: #6600EE; font-weight: bold">18</span>}, {<span style="background-color: #fff0f0">&quot;c&quot;</span>, <span style="color: #6600EE; font-weight: bold">12</span>}, {<span style="background-color: #fff0f0">&quot;d&quot;</span>, <span style="color: #6600EE; font-weight: bold">10</span>}, {<span style="background-color: #fff0f0">&quot;e&quot;</span>, <span style="color: #6600EE; font-weight: bold">9</span>}, {<span style="background-color: #fff0f0">&quot;f&quot;</span>, <span style="color: #6600EE; font-weight: bold">0</span>} };
+}
+
+<span style="color: #008800; font-weight: bold">public</span> <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">shortestPath</span> : MonoBehaviour
+{
+    <span style="color: #008800; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Start</span>()
+    {
+        Graph g = <span style="color: #008800; font-weight: bold">new</span> Graph();    
+        Show(Dijkstra(g, <span style="background-color: #fff0f0">&quot;a&quot;</span>, <span style="background-color: #fff0f0">&quot;f&quot;</span>));
+        Show(Astar(g, <span style="background-color: #fff0f0">&quot;a&quot;</span>, <span style="background-color: #fff0f0">&quot;f&quot;</span>));
+    }
+
+    List&lt;<span style="color: #333399; font-weight: bold">string</span>&gt; Dijkstra(Graph g, <span style="color: #333399; font-weight: bold">string</span> source, <span style="color: #333399; font-weight: bold">string</span> target) 
+    {
+        <span style="color: #333399; font-weight: bold">var</span> d = g.vertices.ToDictionary(v =&gt; v, v =&gt; <span style="color: #6600EE; font-weight: bold">1000</span>);
+        <span style="color: #333399; font-weight: bold">var</span> prev = g.vertices.ToDictionary(v =&gt; v, v =&gt; <span style="background-color: #fff0f0">&quot; &quot;</span>);
+        d[source] = <span style="color: #6600EE; font-weight: bold">0</span>;
+        HashSet&lt;String&gt; Q = <span style="color: #008800; font-weight: bold">new</span> HashSet&lt;<span style="color: #333399; font-weight: bold">string</span>&gt;(g.vertices);
+        <span style="color: #008800; font-weight: bold">while</span> (Q.Count() &gt; <span style="color: #6600EE; font-weight: bold">0</span>)
+        {
+            <span style="color: #333399; font-weight: bold">string</span> v = Q.Select(x =&gt; (d[x], x)).Min().Item2;
+            Q.Remove(v);
+            <span style="color: #008800; font-weight: bold">foreach</span> (<span style="color: #333399; font-weight: bold">var</span> pair <span style="color: #008800; font-weight: bold">in</span> g.edges[v])
+            {
+                <span style="color: #333399; font-weight: bold">int</span> alt = d[v] + pair.Value;
+                <span style="color: #008800; font-weight: bold">if</span> (alt &lt; d[pair.Key]) 
+                {
+                    d[pair.Key] = alt;
+                    prev[pair.Key] = v;
+                }
+            }   
+        }
+        List&lt;<span style="color: #333399; font-weight: bold">string</span>&gt; path = <span style="color: #008800; font-weight: bold">new</span> List&lt;<span style="color: #333399; font-weight: bold">string</span>&gt;();
+        path.Insert(<span style="color: #6600EE; font-weight: bold">0</span>,target);
+        <span style="color: #008800; font-weight: bold">while</span> (prev[target] != <span style="background-color: #fff0f0">&quot; &quot;</span>)
+        {
+            target = prev[target];
+            path.Insert(<span style="color: #6600EE; font-weight: bold">0</span>,target);
+        }
+        <span style="color: #008800; font-weight: bold">return</span> path;
+    }
+
+    List&lt;<span style="color: #333399; font-weight: bold">string</span>&gt; Astar(Graph g, <span style="color: #333399; font-weight: bold">string</span> source, <span style="color: #333399; font-weight: bold">string</span> target) 
+    {
+        <span style="color: #333399; font-weight: bold">var</span> d = g.vertices.ToDictionary(v =&gt; v, v =&gt; <span style="color: #6600EE; font-weight: bold">1000</span>);
+        <span style="color: #333399; font-weight: bold">var</span> prev = g.vertices.ToDictionary(v =&gt; v, v =&gt; <span style="background-color: #fff0f0">&quot; &quot;</span>);
+        d[source] = <span style="color: #6600EE; font-weight: bold">0</span>;
+        HashSet&lt;String&gt; Q = <span style="color: #008800; font-weight: bold">new</span> HashSet&lt;<span style="color: #333399; font-weight: bold">string</span>&gt;(g.vertices);
+        <span style="color: #008800; font-weight: bold">while</span> (Q.Count() &gt; <span style="color: #6600EE; font-weight: bold">0</span>)
+        {
+            <span style="color: #333399; font-weight: bold">string</span> v = Q.Select(x =&gt; (d[x] + g.h[x], x)).Min().Item2;
+            Q.Remove(v);
+            <span style="color: #008800; font-weight: bold">foreach</span> (<span style="color: #333399; font-weight: bold">var</span> pair <span style="color: #008800; font-weight: bold">in</span> g.edges[v])
+            {
+                <span style="color: #333399; font-weight: bold">int</span> alt = d[v] + pair.Value;
+                <span style="color: #008800; font-weight: bold">if</span> (alt &lt; d[pair.Key]) 
+                {
+                    d[pair.Key] = alt;
+                    prev[pair.Key] = v;
+                }
+            }   
+        }
+
+        List&lt;<span style="color: #333399; font-weight: bold">string</span>&gt; path = <span style="color: #008800; font-weight: bold">new</span> List&lt;<span style="color: #333399; font-weight: bold">string</span>&gt;();
+        path.Insert(<span style="color: #6600EE; font-weight: bold">0</span>,target);
+        <span style="color: #008800; font-weight: bold">while</span> (prev[target] != <span style="background-color: #fff0f0">&quot; &quot;</span>)
+        {
+            target = prev[target];
+            path.Insert(<span style="color: #6600EE; font-weight: bold">0</span>,target);
+        }
+        <span style="color: #008800; font-weight: bold">return</span> path;
+    }
+
+    <span style="color: #008800; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Show</span>(List&lt;<span style="color: #333399; font-weight: bold">string</span>&gt; l)
+    {
+        <span style="color: #333399; font-weight: bold">string</span> s = <span style="background-color: #fff0f0">&quot;Path:\n&quot;</span>;
+        <span style="color: #008800; font-weight: bold">foreach</span> (<span style="color: #333399; font-weight: bold">var</span> x <span style="color: #008800; font-weight: bold">in</span> l)
+            s += <span style="background-color: #fff0f0">&quot; &quot;</span> + x;
+        Debug.Log(s);        
+    }
+}
+</pre></div>
+
