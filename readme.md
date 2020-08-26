@@ -37,8 +37,7 @@ class: left, middle, inverse
 
 # Movement
 
-.center[![:scale 65%](figures/esquema.png)]
-.center[.small[Source: .red[(Millington, 2019)]]]
+.center[![:scale 75%](figures/esquema.png)]
 
 .blue[It is the lowest AI level.]
 
@@ -1061,6 +1060,7 @@ Main Algorithms:
 [Source](https://en.wikipedia.org/wiki/A*_search_algorithm)]
 ]]
 
+Dijkstra is A* when $h(x)=0,\forall x$.
 ---
 class: left, middle, inverse
 
@@ -1084,43 +1084,127 @@ class: left, middle, inverse
 
 # Pathfinding
 
-Aplicació A* per pathfinding:
+**Components**:
 
-- polygons
+- .blue[World Representation] as .blue[graphs]
+  - *Vertices*: convex surfaces <br>
+no line segment between two inner points goes outside the surface
 
-- A*
+  - *Edges*: connect vertices with cost
 
-- suavitzat de camins
+- .blue[A*] algorithm: 
+  - choosing a .blue[heuristic]
+
+- .blue[Path Smoothing]
+  - algorithm
 
 ---
 
-# Advanced Pathfinding
+# World Representation
 
-- Hierarchical Pathfinding
+.cols5050[
+.col1[
+.blue[Tile Graphs]:
+.small[World splitted in regular tiles (squares, hexagons...)]
 
-- Open Goal Pathfinding
+![:scale 75%](figures/hexaTiles.jpg)<br>
+[Source](https://www.pinterest.com/pin/804948133377857898/)
 
-- Dynamic Pathfinding
+.blue[Points of Visibility]:
 
-- IDA / SMA
+![:scale 60%](figures/vis_graph.png)<br>
+[Source](http://user.ceng.metu.edu.tr/~e1631126/ceng786hw3/ceng786hw3.html)
 
-- Time Slicing and Pooling Planners
+]
+.col2[
+.blue[Dirichlet Domains]:
+.small[Regions defined (manually) by a set points]
+
+![:scale 80%](figures/dirichlet.png)<br>
+[Source](http://what-when-how.com/opengl-programming-guide/dirichlet-domains-opengl-programming/)
+
+.blue[Navigation Meshes]:
+![:scale 95%](figures/navmesh.png)
+]]
+
+---
+
+# Heuristics
+
+.blue[Properties]:
+
+- .red[Underestimating]: heuristic too slow.<br>
+The more accurate the faster A* runs.
+
+- .red[Overestimating]: heuristic too high.<br>
+A* my not return the best path.
+
+- .red[Admissible]: if an heuristic $h(n)$ is lower than the true cost for all the nodes, A* is optimal.
+
+.blue[Some common heuristics]:
+
+- .red[Euclidean distance]<br>
+In presence of lot of walls and corridor (indoor levels) it takes longer to run.
+
+- .red[Cluster Heuristic]: grouping graph vertices together in clusters. <br>
+Every room becomes a cluster. Automatic or provided by de level designer.
+
+---
+
+# Path Smoothing
+
+.cols5050[
+.col1[
+.blue[Simple Smoothing]:
+
+![:scale 100%](figures/pathSmoothing.png)
+]
+.col2[
+.blue[Bézier curve based smooth path]:
+.center[
+![:scale 90%](figures/bezierPathSmoothing.png)
+[Source](https://www.researchgate.net/figure/Path-smoothing-with-Bezier-curve_fig4_285739464)]
+]]
 
 ---
 
 # Hierarchical Pathfinding
 
-.cols5050[
-.col1[
-- How would be speed up this example ?
+.blue[Main idea]:
 
-- More than 2 ms is bad for Real Time applications
+- Clustering: group nodes to build a higher level graph
 
-- [Code](https://github.com/anvaka/ngraph.path) and [Demo](https://anvaka.github.io/ngraph.path.demo/#?graph=amsterdam-roads) here
-]
-.col2[
-![:scale 90%](figures/hierarchical.gif)
-]]
+- Connection costs: <br>
+minimum, maximum or average distances
+
+- Pathfinding:
+  - Apply pathfinding on higher level graph
+  - For each cluster in resulting path apply pathfinding
+
+.blue[Example]:
+.center[
+![:scale 100%](figures/hierarchical.png)
+[Hierarchical Path-Finding for Navigation Meshes](https://www.cs.upc.edu/~npelechano/Pelechano_HNAstar_prePrint.pdf)]
+
+---
+
+# Other A* Variations
+
+- .blue[Open Goal Pathfinding]: many possible goals.<br>
+Example: alarms
+
+- .blue[Dynamic Pathfinding] (_D*_): changing evironment (allows backtracking)
+Example: change the route to avoid detection
+
+- .blue[Low Memory Algorithms]: 
+  - _IDA*_: no lists
+  - _SMA*_: fixed size open list
+
+- .blue[Pooling Planners]: queue of pathfinders.<br>
+Example: MMORG
+
+- .blue[Continuous Time Pathfinding]: task changes quickly ([JPS+](https://www.gdcvault.com/play/1022094/JPS-Over-100x-Faster-than))<br>
+Example: Racing Games
 
 ---
 class: left, middle, inverse
