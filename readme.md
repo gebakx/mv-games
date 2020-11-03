@@ -677,9 +677,7 @@ void Patrol()
 
 - Follow a ghost agent <br>
 [Example](figures/patrol2.mkv)
-
 - Adjust speeds (ghost waiting?)
-
 - Remember to disable the ghost `Mesh Renderer`
 
 .cols5050[
@@ -690,6 +688,8 @@ Use .blue[Beizer Curves] to create the path. <br>
 
 - [BG Curve](https://assetstore.unity.com/packages/tools/utilities/bg-curve-59043) asset. BansheeGz, 2020.
 - [Bézier Path Creator](https://assetstore.unity.com/packages/tools/utilities/b-zier-path-creator-136082) asset. Sebastian Lague, 2019.
+  - Example: <br>
+[video](figures/curbe.mkv) / [code](code/Follow.html) / [download](code/Follow.cs)
 
 Both contain getting closest point to the curve.
 

@@ -1,0 +1,51 @@
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">UnityEngine</span>;
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">UnityEngine.AI</span>;
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">PathCreation</span>;
+<span style="color: #008800; font-weight: bold">using</span> <span style="color: #0e84b5; font-weight: bold">System.Collections</span>;
+
+<span style="color: #008800; font-weight: bold">public</span> <span style="color: #008800; font-weight: bold">class</span> <span style="color: #BB0066; font-weight: bold">Follow</span> : MonoBehaviour
+{
+    <span style="color: #008800; font-weight: bold">public</span> GameObject robber;
+    <span style="color: #008800; font-weight: bold">public</span> GameObject treasure;
+    <span style="color: #008800; font-weight: bold">public</span> NavMeshAgent agent;
+    <span style="color: #008800; font-weight: bold">public</span> PathCreator pathCreator;
+    <span style="color: #008800; font-weight: bold">public</span> EndOfPathInstruction endOfPathInstruction;
+    <span style="color: #008800; font-weight: bold">public</span> <span style="color: #333399; font-weight: bold">float</span> speed = <span style="color: #6600EE; font-weight: bold">5</span>;
+    <span style="color: #333399; font-weight: bold">float</span> distanceTravelled;
+
+    <span style="color: #008800; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Start</span>()
+    {
+        <span style="color: #008800; font-weight: bold">if</span> (pathCreator != <span style="color: #008800; font-weight: bold">null</span>)
+        {
+            distanceTravelled = pathCreator.path.GetClosestDistanceAlongPath(transform.position); 
+            agent.destination = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
+        };
+    }
+
+    <span style="color: #008800; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">Update</span>()
+    {
+        <span style="color: #008800; font-weight: bold">if</span> (Vector3.Distance(treasure.transform.position, robber.transform.position) &lt; <span style="color: #6600EE; font-weight: bold">10f</span>)
+        {
+            agent.destination = robber.transform.position;
+            agent.isStopped = <span style="color: #008800; font-weight: bold">false</span>;
+        }        
+        <span style="color: #008800; font-weight: bold">else</span>
+            <span style="color: #0066BB; font-weight: bold">if</span> (agent.remainingDistance &gt; <span style="color: #6600EE; font-weight: bold">0.2f</span>)
+            {
+                distanceTravelled = pathCreator.path.GetClosestDistanceAlongPath(transform.position); 
+                agent.destination = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
+            }
+            <span style="color: #008800; font-weight: bold">else</span>
+            {
+                agent.isStopped = <span style="color: #008800; font-weight: bold">true</span>;
+                <span style="color: #008800; font-weight: bold">if</span> (pathCreator != <span style="color: #008800; font-weight: bold">null</span>)
+                {
+                    distanceTravelled += speed * Time.deltaTime;
+                    transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled, endOfPathInstruction);
+                    transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled, endOfPathInstruction);
+                }        
+            }
+    }
+}
+</pre></div>
+
